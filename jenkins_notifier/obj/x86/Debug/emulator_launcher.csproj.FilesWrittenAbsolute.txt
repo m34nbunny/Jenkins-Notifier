@@ -1,8 +1,0 @@
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/bin/Debug/white_android.png
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/bin/Debug/favicon.ico
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/bin/Debug/emulator_launcher.exe.config
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/bin/Debug/emulator_launcher.exe.mdb
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/bin/Debug/emulator_launcher.exe
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/obj/x86/Debug/emulator_launcher.exe
-/home/meanbunny/projects/mono_projects/emulator_launcher/emulator_launcher/obj/x86/Debug/emulator_launcher.exe.mdb
