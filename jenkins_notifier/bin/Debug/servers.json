@@ -1,0 +1,8 @@
+[
+	{ "Name": "tc-portal-dev", "Url" : "https://build.titleclose.com/job/TitleClose_DEV/" },
+	{ "Name": "tc-portal-qc", "Url" : "http://build.titleclose.com/job/TitleClose_QC/" },
+	{ "Name": "tc-ios-mobile-dev", "Url" : "http://mmosx:8080/job/tc-ios-mobile-dev/" },
+	{ "Name": "tc-android-mobile-dev", "Url" : "http://mmdesk2:8080/job/tc-android-mobile-dev/" },
+	{ "Name": "epic-ios-mobile-dev", "Url" : "http://mmosx:8080/job/epic-ios-mobile-dev/" },
+	{ "Name": "epic-android-mobile-dev", "Url" : "http://mmdesk2:8080/job/epic-android-mobile-dev/" },
+]
