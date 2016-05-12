@@ -13,7 +13,7 @@ namespace jenkins_notifier.Services
 {
 	public class WebService
 	{
-
+		public int Timeout { get; set; }
 		public string Url { get; set; }
 
 		public WebService ()
@@ -22,7 +22,33 @@ namespace jenkins_notifier.Services
 
 		private static readonly Encoding encoding = Encoding.UTF8;
 
+		public JsonPayload<T> Get<T>(string suffixUrl) {
+			JsonPayload<T> result = new JsonPayload<T>();
+			var request = (HttpWebRequest)WebRequest.Create(Url + suffixUrl);
+			request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+			request.Method = "GET";
+			if (Timeout > 0) {
+				request.Timeout = Timeout;
+			}
 
+			try {
+				var response = request.GetResponse();
+				var respStream = response.GetResponseStream();
+				respStream.Flush();
+
+				using (StreamReader sr = new StreamReader(respStream)) {
+					string strContent = sr.ReadToEnd();
+					respStream = null;
+
+					result.Payload = JsonConvert.DeserializeObject<T>(strContent);
+					return result;
+				}
+			} catch (Exception ex) {
+				result.Errored = true;
+				result.Exception = ex.Message;
+			}
+			return result;
+		}
 
 		/// <summary>
 		/// Makes an asynchronous GET request.
@@ -34,6 +60,9 @@ namespace jenkins_notifier.Services
 			var request = (HttpWebRequest)WebRequest.Create(Url + suffixUrl);
 			request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
 			request.Method = "GET";
+			if (Timeout > 0) {
+				request.Timeout = Timeout;
+			}
 
 			try {
 				var response = await request.GetResponseAsync();

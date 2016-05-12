@@ -24,11 +24,12 @@ namespace jenkins_notifier
 		private static PlatformService platformService = new PlatformService();
 		private static LoggerService loggerService = new LoggerService();
 		private static WebService webService = new WebService ();
-		private static List<JobRequest> jobStatuses = new List<JobRequest> ();
+		private static List<Job> jobStatuses = new List<Job> ();
 
 		public static void Main (string[] args)
 		{
 			try {
+				webService.Timeout = 3000;
 				settings = settingsService.GetSettings ();
 
 				if (platformService.IsWindows) {
@@ -57,28 +58,28 @@ namespace jenkins_notifier
 		async static void Timer_Elapsed (object sender, ElapsedEventArgs e)
 		{
 			var jobs = jobService.GetAllJobs ();
-			var tempStatuses = new List<JobRequest> ();
+			var tempStatuses = new List<Job> ();
 			foreach (var item in jobs) {
 				webService.Url = item.Url;
-				var result = await webService.GetAsync<JobRequest> ("api/json?pretty=true&tree=color,lastBuild[url]");
-				JobRequest request = new JobRequest ();
+				var result = webService.Get<Job> ("api/json?pretty=true&tree=color,lastBuild[url]");
 				if (result.Errored) {
 					loggerService.Log (result.Exception);
-					request.Name = item.Name;
-					request.color = "grey";
-					request.ImgPath = settings.ImageFolderPath + request.color + ".png";
-					request.lastBuild = new LastBuild ();
-					request.lastBuild.url = item.Url;
-					request.JobUrl = item.Url;
-					tempStatuses.Add (request);
+					result.Payload = new Job ();
+					result.Payload.Name = item.Name;
+					result.Payload.Url = item.Url;
+					result.Payload.JobUrl = item.Url;
+					result.Payload.color = "grey";
+					result.Payload.lastBuild = new LastBuild ();
+					result.Payload.lastBuild.url = item.Url;
+					tempStatuses.Add (result.Payload);
 					continue;
 				}
-					
-				request = result.Payload;
-				request.Name = item.Name;
-				request.ImgPath = settings.ImageFolderPath + request.color + ".png";
-				request.JobUrl = item.Url;
-				tempStatuses.Add (request);
+
+				result.Payload.Name = item.Name;
+				result.Payload.Url = item.Url;
+				result.Payload.JobUrl = item.Url;
+				tempStatuses.Add (result.Payload);
+
 
 				var prevJob = jobStatuses
 					.Where (x => x.Name == item.Name)
@@ -87,21 +88,9 @@ namespace jenkins_notifier
 				if (prevJob == null)
 					continue;
 
-				if (prevJob.color != request.color && request.color == "red") {
+				if (prevJob.color != result.Payload.color && result.Payload.color != "grey") {
 					try {
-						Process.Start ("notify-send", "\"" + item.Name + "\" \"Build Failure\"");
-					} catch (Exception ex) {
-						loggerService.Log (ex.Message);
-					}
-				} else if (prevJob.color != request.color && request.color == "blue") {
-					try {
-						Process.Start ("notify-send", "\"" + item.Name + "\" \"Job was built successfully.\"");
-					} catch (Exception ex) {
-						loggerService.Log (ex.Message);
-					}
-				} else if (prevJob.color != request.color && request.color == "blue_anime") {
-					try {
-						Process.Start ("notify-send", "\"" + item.Name + "\" \"Building job...\"");
+						Process.Start ("notify-send", "--icon=" + result.Payload.ImgPath + " \"" + result.Payload.Name + "\" \"" + result.Payload.JobStatusMessage + "\"");
 					} catch (Exception ex) {
 						loggerService.Log (ex.Message);
 					}
